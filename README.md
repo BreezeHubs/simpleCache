@@ -16,26 +16,27 @@
 
 ## 接口
 ```go
-type Cacher interface {
-	//size: 1KB 100KB 1MB  2MB 1GB
-	SetMaxMemory(size string) bool
-
-	//写入缓存
-	Set(key string, value any, expire time.Duration) bool
-
-	//获取
-	Get(key string) (any, bool)
-
-	//删除
-	Del(key string) bool
-
-	//判断是否存在
-	Exist(key string) bool
-
-	//清空所有key
-	Flush() bool
-
-	//获取key的数量
-	Count() int64
+type ICacher interface {
+    // Set 写入缓存
+    Set(key string, value any, expire time.Duration) bool
+    
+    // Get 获取
+    Get(key string) (any, bool)
+    
+    // Del 删除
+    Del(key string) bool
+    
+    // Exist 判断是否存在
+    Exist(key string) bool
+    
+    // Flush 清空所有key
+    Flush()
+    
+    // Count 获取key的数量
+    Count() int64
+    
+    Keys() []string
+    
+    GetUseMemory() MemorySize
 }
 ```
