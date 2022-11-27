@@ -30,6 +30,16 @@ func (c *cacheServer) Set(key string, value any, expire ...time.Duration) bool {
 	return c.cache.Set(key, value, tmpEx)
 }
 
+// ExistOrStore 若key不存在则写入
+func (c *cacheServer) ExistOrStore(key string, value any, expire ...time.Duration) bool {
+	//过期时间
+	var tmpEx time.Duration
+	if len(expire) > 0 {
+		tmpEx = expire[0]
+	}
+	return c.cache.ExistOrStore(key, value, tmpEx)
+}
+
 // Get 获取
 func (c *cacheServer) Get(key string) (any, bool) {
 	return c.cache.Get(key)

@@ -17,6 +17,8 @@ func main() {
 	c.Set("a", s.String(), 1*time.Nanosecond)
 
 	c.Set("b", 1231414523)
+	ok := c.ExistOrStore("b", 1231414523)
+	fmt.Println("ExistOrStore: ", ok)
 
 	fmt.Println(c.Count())
 	fmt.Println(c.Keys())

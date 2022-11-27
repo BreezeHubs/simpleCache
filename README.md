@@ -20,6 +20,9 @@ type ICacher interface {
     // Set 写入缓存
     Set(key string, value any, expire time.Duration) bool
     
+    // ExistOrStore 若key不存在则写入
+    ExistOrStore(key string, value any, expire time.Duration) bool
+    
     // Get 获取
     Get(key string) (any, bool)
     
@@ -35,8 +38,10 @@ type ICacher interface {
     // Count 获取key的数量
     Count() int64
     
+    // Keys 获取所有key
     Keys() []string
     
+    // GetUseMemory 获取当前占用内存
     GetUseMemory() MemorySize
 }
 ```

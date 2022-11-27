@@ -69,6 +69,37 @@ func (c *Cache) Set(key string, value any, expire time.Duration) bool {
 	return true
 }
 
+// ExistOrStore 若key不存在则写入
+func (c *Cache) ExistOrStore(key string, value any, expire time.Duration) bool {
+	c.vLock.Lock()
+	defer c.vLock.Unlock()
+
+	_, ok := c.get(key) //判断是否存在旧值
+	if ok {
+		return false
+	}
+
+	kSize := getValueSize(key)   //获取当前键大小
+	vSize := getValueSize(value) //获取当前值大小
+
+	//判断是否超出最大内存限制，超出则set失败 （当前占用内存 + 新值的size）
+	if c.currentMemorySize+kSize+vSize > c.maxMemorySize {
+		return false
+	}
+
+	data := &cacheValue{
+		value:     value,
+		createdAt: time.Now(),
+		expire:    expire,
+		size:      kSize + vSize, //键名+键值
+	}
+
+	//删除旧值，增加新值
+	c.add(key, data)
+
+	return true
+}
+
 // Get 获取
 func (c *Cache) Get(key string) (any, bool) {
 	c.vLock.RLock()
