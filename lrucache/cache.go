@@ -10,14 +10,13 @@ type Cache struct {
 	currentMemorySize MemorySize //当前使用内存大小
 	maxMemorySize     MemorySize //最大内存
 
-	list   *list.List             //使用go语言内置的双向链表存储节点
+	list   *list.List             //双向链表
 	values map[string]*cacheValue //数据
 	vLock  sync.RWMutex           //数据读写锁
 
-	garbageCollectionTime   time.Duration //回收间隔时间
-	garbageCollectionWorker int           //回收消费者数
-
-	lruGarbageCollectionRate float64 //达到占用比率，触发lru回收
+	garbageCollectionTime    time.Duration //回收间隔时间
+	garbageCollectionWorker  int           //回收消费者数
+	lruGarbageCollectionRate float64       //达到占用比率，触发lru回收
 }
 
 // NewLruCache 实例化
@@ -47,8 +46,8 @@ func (c *Cache) Set(key string, value any, expire time.Duration) bool {
 	c.vLock.Lock()
 	defer c.vLock.Unlock()
 
-	kSize := getValueSize(key)   //获取当前键大小
-	vSize := getValueSize(value) //获取当前值大小
+	kSize := getValueSize(key)   //获取当前键占用内存
+	vSize := getValueSize(value) //获取当前值占用内存
 
 	var oldSize MemorySize
 	oldValue, ok := c.get(key) //判断是否存在旧值，存在则获取旧值的size
@@ -89,8 +88,8 @@ func (c *Cache) ExistOrStore(key string, value any, expire time.Duration) bool {
 		return false
 	}
 
-	kSize := getValueSize(key)   //获取当前键大小
-	vSize := getValueSize(value) //获取当前值大小
+	kSize := getValueSize(key)   //获取当前键占用内存
+	vSize := getValueSize(value) //获取当前值占用内存
 
 	//判断是否超出最大内存限制，超出则set失败 （当前占用内存 + 新值的size）
 	if c.currentMemorySize+kSize+vSize > c.maxMemorySize {
